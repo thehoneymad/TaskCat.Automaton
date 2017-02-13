@@ -7,7 +7,7 @@
     public class FiniteStateMachine
     {
         /// <summary>
-        /// Name of the finite state machine
+        /// Name of the finite state machine.
         /// </summary>
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -24,6 +24,11 @@
             this.Name = name;
         }
 
+        /// <summary>
+        /// Load a finite state machine from a json string.
+        /// </summary>
+        /// <param name="json">json document of a state machine</param>
+        /// <returns></returns>
         public static FiniteStateMachine FromJson(string json)
         {
             if (string.IsNullOrWhiteSpace(json))
@@ -36,6 +41,11 @@
             return fsm;
         }
 
+        /// <summary>
+        /// Load a finite state machine from file path.
+        /// </summary>
+        /// <param name="filePath">File path where the json state machine is located.</param>
+        /// <returns></returns>
         public static FiniteStateMachine FromFile(string filePath)
         {
             using (StreamReader file = File.OpenText(filePath))
