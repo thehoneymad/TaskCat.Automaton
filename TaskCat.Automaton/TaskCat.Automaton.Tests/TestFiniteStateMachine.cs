@@ -27,6 +27,8 @@ namespace TaskCat.Automaton.Tests
             Assert.IsNotNull(machine);
             Assert.AreEqual("ClassifiedDelivery", machine.Name);
             Assert.AreEqual("default", machine.Variant);
+            Assert.IsNotNull(machine.Nodes);
+            Assert.IsNotNull(machine.Events);
         }
     }
 }

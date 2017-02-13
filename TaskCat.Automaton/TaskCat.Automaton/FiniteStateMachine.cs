@@ -1,7 +1,9 @@
 ﻿namespace TaskCat.Automaton
 {
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
     using System;
+    using System.Collections.Generic;
     using System.IO;
 
     public class FiniteStateMachine
@@ -18,6 +20,25 @@
         /// </summary>
         [JsonProperty("variant")]
         public string Variant { get; set; } = "default";
+
+        /// <summary>
+        /// Boolean trigger to let the Finite State Machine know
+        /// that this is a forest instead of a single state tree
+        /// </summary>
+        [JsonProperty("isForest")]
+        public bool IsForest { get; set; }
+
+        /// <summary>
+        /// Nodes allowed in the finite state machine
+        /// </summary>
+        [JsonProperty("nodes")]
+        public List<JObject> Nodes { get; set; }
+
+        /// <summary>
+        /// Events/Transition definitions for the machine
+        /// </summary>
+        [JsonProperty("events")]
+        public List<JObject> Events { get; set; }
 
         public FiniteStateMachine(string name)
         {
