@@ -44,6 +44,11 @@
         [JsonProperty("events")]
         public List<TransitionEvent> Events { get; set; }
 
+
+        public List<Node> NodeHistory { get; private set; } = new List<Node>();
+
+        public bool IsResolved { get; private set; }
+
         private FiniteStateMachine()
         {
 
@@ -121,11 +126,12 @@
 
             var startNode = this.Nodes.First(x => x.IsEntryNode);
             this.currentCandiateNode = startNode;
+            this.NodeHistory.Add(currentCandiateNode);
             // This will definitely be a List since we can have multiple candidate node
         }
 
 
-        private dynamic ExecuteEvent(EventDefinition eventDef)
+        public void ExecuteEvent(EventDefinition eventDef)
         {
             if (eventDef == null)
                 throw new ArgumentNullException(nameof(eventDef));
@@ -136,20 +142,58 @@
             if (this.currentCandiateNode == null)
                 throw new NullReferenceException(nameof(currentCandiateNode));
 
+            if (this.currentCandiateNode.Type != eventDef.FromType)
+                return;
+
             // Find a event that matches the currentCandidate
             var eventMatch = this.Events.Where(x => x.From == eventDef.FromType && IsSameOperation(x.MatchCondition, eventDef.Operation));
+
             if (eventMatch.Any())
             {
                 // Mathing event can be more than one of course, once again, this is where we send back a choice
-                // For the sake of simplicity of the first example, taking the first one.
+                // For the sake of simplicity of the first example, taking the current one.
                 var selectedEvent = eventMatch.First();
-                var node = this.Nodes.First(x => x.Type == eventDef.FromType);
-                selectedEvent.Action.ApplyTo(node.Payload);
-                return node.Payload;               
-            }
-            else
-            {
-                return null; // TODO: Need to devise a nice looking exception for this.
+                var node = this.currentCandiateNode;
+
+                selectedEvent.Action?.ApplyTo(currentCandiateNode.Payload);
+
+                // We got the node. Lets create the next node. 
+                // Do we need to create a duplicate 
+                if (selectedEvent.From == selectedEvent.Target && selectedEvent.CreateNewTarget)
+                {
+                   
+                    // clone the current node. This is JS style cloing, need to write a deep cloning method
+                    var nodestring = JsonConvert.SerializeObject(node);
+                    var cloneNode = JsonConvert.DeserializeObject<Node>(nodestring);
+
+                    // We have to inject a RESET method for this nodes. We dont have that.
+                    // So we have to work with what we have now, that means nothing, we have nothing now. just clone this shit
+                    // And forget. We can check that later.
+
+                    this.currentCandiateNode = cloneNode;
+
+                    selectedEvent.Action?.ApplyTo(this.currentCandiateNode.Payload);
+                    this.NodeHistory.Add(this.currentCandiateNode);
+                }
+                else if (selectedEvent.IsResolveEvent)
+                {
+                    // This means this is where the shit stops. Target should be null here. 
+                    // We can check for that nullity,  of course we should do it in validation
+                    selectedEvent.Action?.ApplyTo(currentCandiateNode.Payload);
+                    this.IsResolved = true;
+                }
+                else
+                {
+                    // Need to add the target node here. We don't yet know how to get a sample
+                    // or generator for that. We might need to think about that here.
+
+                    // For now, lets just make sure it is testable. 
+                    var dummyNode = this.Nodes.First(x => x.Type == selectedEvent.Target);
+                    this.currentCandiateNode = dummyNode;
+                    this.NodeHistory.Add(dummyNode);
+                }
+                
+                // Change application is done.               
             }
         }
 

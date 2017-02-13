@@ -1,5 +1,7 @@
-﻿using NUnit.Framework;
+﻿using Marvin.JsonPatch.Operations;
+using NUnit.Framework;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 
 namespace TaskCat.Automaton.Tests
@@ -21,6 +23,31 @@ namespace TaskCat.Automaton.Tests
             Assert.AreEqual("default", machine.Variant);
             Assert.IsNotNull(machine.Nodes);
             Assert.IsNotNull(machine.Events);
+        }
+
+        [Test]
+        public void TestExecuteSampleEvent()
+        {
+            var jsonFsm = File.ReadAllText($"{ExecutingPath}\\SampleFSM.json");
+            Assert.IsNotNull(jsonFsm);
+
+            var machine = FiniteStateMachine.FromJson(jsonFsm);
+            Assert.IsNotNull(machine);
+
+            Operation op = new Operation() {
+                op = "replace",
+                path = "/state",
+                value = "COMPLETED"
+            };
+
+            machine.ExecuteEvent(new EventDefinition() {
+                FromType = "FetchDeliveryMan",
+                Operation = op
+            });
+
+            Assert.That(machine.NodeHistory.Count == 2);
+            Assert.That(machine.NodeHistory.First().Type == "FetchDeliveryMan");
+            Assert.That(machine.NodeHistory.Last().Type == "Pickup");
         }
     }
 }
