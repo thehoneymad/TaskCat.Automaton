@@ -10,14 +10,6 @@ namespace TaskCat.Automaton.Tests
         public string ExecutingPath => Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 
         [Test]
-        public void TestCreation()
-        {
-            FiniteStateMachine machine = new FiniteStateMachine("SampleMachine");
-            Assert.IsNotNull(machine);
-            Assert.AreEqual("SampleMachine", machine.Name);
-        }
-
-        [Test]
         public void TestCreation_NotNull()
         {
             var jsonFsm = File.ReadAllText($"{ExecutingPath}\\SampleFSM.json");

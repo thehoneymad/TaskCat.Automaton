@@ -40,9 +40,9 @@
         [JsonProperty("events")]
         public List<TransitionEvent> Events { get; set; }
 
-        public FiniteStateMachine(string name)
+        private FiniteStateMachine()
         {
-            this.Name = name;
+
         }
 
         /// <summary>
