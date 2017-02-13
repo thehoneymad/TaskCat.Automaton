@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="EventDefinition.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="TransitionEvent.cs" />
     <Compile Include="FiniteStateMachine.cs" />

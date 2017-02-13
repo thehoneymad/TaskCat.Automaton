@@ -1,4 +1,5 @@
 ﻿using Marvin.JsonPatch.Dynamic;
+using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 
@@ -16,7 +17,7 @@ namespace TaskCat.Automaton
         public string Event { get; set; }
 
         [JsonProperty("matchCondition")]
-        public JObject MatchCondition { get; set; }
+        public Operation MatchCondition { get; set; }
 
         [JsonProperty("createNewTarget")]
         public bool CreateNewTarget { get; set; }
