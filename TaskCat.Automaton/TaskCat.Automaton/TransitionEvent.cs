@@ -1,7 +1,6 @@
 ﻿using Marvin.JsonPatch.Dynamic;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
 
 namespace TaskCat.Automaton
 {

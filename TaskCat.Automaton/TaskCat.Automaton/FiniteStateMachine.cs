@@ -31,7 +31,7 @@
         /// Nodes allowed in the finite state machine
         /// </summary>
         [JsonProperty("nodes")]
-        public List<dynamic> Nodes { get; set; }
+        public List<Node> Nodes { get; set; }
  
 
         /// <summary>
@@ -78,6 +78,8 @@
 
                 return fsm;
             }
-        } 
+        }
+
+
     }
 }
