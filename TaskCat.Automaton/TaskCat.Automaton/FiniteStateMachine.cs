@@ -1,5 +1,7 @@
 ﻿namespace TaskCat.Automaton
 {
+    using Marvin.JsonPatch;
+    using Marvin.JsonPatch.Dynamic;
     using Newtonsoft.Json;
     using Newtonsoft.Json.Linq;
     using System;
@@ -32,13 +34,14 @@
         /// Nodes allowed in the finite state machine
         /// </summary>
         [JsonProperty("nodes")]
-        public List<JObject> Nodes { get; set; }
+        public List<dynamic> Nodes { get; set; }
+ 
 
         /// <summary>
         /// Events/Transition definitions for the machine
         /// </summary>
         [JsonProperty("events")]
-        public List<JObject> Events { get; set; }
+        public List<TransitionEvent> Events { get; set; }
 
         public FiniteStateMachine(string name)
         {
