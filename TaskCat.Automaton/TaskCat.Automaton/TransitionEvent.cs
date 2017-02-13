@@ -23,7 +23,7 @@ namespace TaskCat.Automaton
         public bool CreateNewTarget { get; set; }
 
         [JsonProperty("action")]
-        public List<JsonPatchDocument> Action { get; set; }
+        public JsonPatchDocument Action { get; set; }
 
         [JsonProperty("maxEventRetry")]
         public int MaxEventRetry { get; set; }

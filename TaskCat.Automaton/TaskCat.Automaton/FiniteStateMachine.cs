@@ -1,9 +1,6 @@
 ﻿namespace TaskCat.Automaton
 {
-    using Marvin.JsonPatch;
-    using Marvin.JsonPatch.Dynamic;
     using Newtonsoft.Json;
-    using Newtonsoft.Json.Linq;
     using System;
     using System.Collections.Generic;
     using System.IO;
@@ -81,6 +78,6 @@
 
                 return fsm;
             }
-        }
+        } 
     }
 }
