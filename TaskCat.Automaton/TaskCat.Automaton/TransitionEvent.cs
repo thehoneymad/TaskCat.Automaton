@@ -9,7 +9,7 @@ namespace TaskCat.Automaton
         [JsonProperty("from")]
         public string From { get; set; }
 
-        [JsonProperty("to")]
+        [JsonProperty("target")]
         public string Target { get; set; }
 
         [JsonProperty("event")]
@@ -26,5 +26,8 @@ namespace TaskCat.Automaton
 
         [JsonProperty("maxEventRetry")]
         public int MaxEventRetry { get; set; }
+
+        [JsonProperty("isResolveEvent")]
+        public bool IsResolveEvent { get; set; }
     }
 }
