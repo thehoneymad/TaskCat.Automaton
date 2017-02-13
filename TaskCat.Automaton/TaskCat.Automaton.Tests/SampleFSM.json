@@ -1,0 +1,109 @@
+﻿{
+  "name": "ClassifiedDelivery",
+  "variant": "default",
+  "isForest": true,
+  "nodes": [
+    {
+      "type": "FetchDeliveryMan",
+      "isEntryNode": true
+    },
+    {
+      "type": "Pickup",
+      "isDuplicateAllowed": true
+    },
+    {
+      "type": "Delivery",
+      "isResolveNode": true,
+      "isDuplicateAllowed": true
+    }
+  ],
+  "events": [
+    {
+      "from": "FetchDeliveryMan",
+      "event": "FetchDeliveryMan_COMPLETED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "target": "Pickup"
+    },
+    {
+      "from": "Pickup",
+      "event": "Pickup_COMPLETED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "target": "Delivery"
+    },
+    {
+      "from": "Pickup",
+      "event": "PickUp_FAILED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "Pickup",
+      "createNewTarget": true,
+      "action": [
+        {
+          "op": "replace",
+          "path": "/variant",
+          "value": "retry"
+        }
+      ],
+      "maxEventRetry": 4
+    },
+    {
+      "from": "Delivery",
+      "event": "Delivery_COMPLETED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "isResolveEvent": true
+    },
+    {
+      "from": "Delivery",
+      "event": "Delivery_FAILED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "Delivery",
+      "createNewTarget": true,
+      "action": [
+        {
+          "op": "replace",
+          "path": "/variant",
+          "value": "retry"
+        }
+      ],
+      "maxEventRetry": 4
+    },
+    {
+      "from": "Delivery",
+      "event": "Delivery_RETURNED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "RETURNED"
+      },
+      "target": "Delivery",
+      "createNewTarget": true,
+      "action": [
+        {
+          "op": "replace",
+          "path": "/variant",
+          "value": "return"
+        }
+      ],
+      "maxEventRetry": 4
+    }
+  ]
+}
