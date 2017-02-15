@@ -95,7 +95,7 @@
 
         private void Validate()
         {
-            if (Nodes.GroupBy(x => x.Type).Count() != this.Nodes.Count)
+            if (Nodes.GroupBy(x => x.Id).Count() != this.Nodes.Count)
             {
                 throw new NotSupportedException("Node types should be unique, duplicate node detected");
             }
@@ -142,7 +142,7 @@
             if (this.currentCandiateNode == null)
                 throw new NullReferenceException(nameof(currentCandiateNode));
 
-            if (this.currentCandiateNode.Type != eventDef.FromType)
+            if (this.currentCandiateNode.Id != eventDef.FromType)
                 return;
 
             // Find a event that matches the currentCandidate
@@ -188,7 +188,7 @@
                     // or generator for that. We might need to think about that here.
 
                     // For now, lets just make sure it is testable. 
-                    var dummyNode = this.Nodes.First(x => x.Type == selectedEvent.Target);
+                    var dummyNode = this.Nodes.First(x => x.Id == selectedEvent.Target);
                     this.currentCandiateNode = dummyNode;
                     this.NodeHistory.Add(dummyNode);
                 }

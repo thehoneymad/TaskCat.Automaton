@@ -46,8 +46,8 @@ namespace TaskCat.Automaton.Tests
             });
 
             Assert.That(machine.NodeHistory.Count == 2);
-            Assert.That(machine.NodeHistory.First().Type == "FetchDeliveryMan");
-            Assert.That(machine.NodeHistory.Last().Type == "Pickup");
+            Assert.That(machine.NodeHistory.First().Id == "FetchDeliveryMan");
+            Assert.That(machine.NodeHistory.Last().Id == "Pickup");
         }
     }
 }

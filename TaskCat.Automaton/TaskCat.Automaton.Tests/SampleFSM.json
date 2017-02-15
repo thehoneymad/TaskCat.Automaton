@@ -8,13 +8,11 @@
       "isEntryNode": true
     },
     {
-      "type": "Pickup",
-      "isDuplicateAllowed": true
+      "type": "Pickup"
     },
     {
       "type": "Delivery",
-      "isResolveNode": true,
-      "isDuplicateAllowed": true
+      "isResolveNode": true
     }
   ],
   "events": [
