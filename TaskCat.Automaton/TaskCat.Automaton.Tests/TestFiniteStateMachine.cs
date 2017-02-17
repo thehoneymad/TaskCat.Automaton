@@ -41,7 +41,7 @@ namespace TaskCat.Automaton.Tests
             };
 
             machine.ExecuteEvent(new EventDefinition() {
-                FromType = "FetchDeliveryMan",
+                Type = "FetchDeliveryMan",
                 Operation = op
             });
 

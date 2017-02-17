@@ -11,7 +11,7 @@
         /// <summary>
         /// Event/Message to be invoked from type
         /// </summary>
-        public string FromType { get; set; }
+        public string Type { get; set; }
 
         /// <summary>
         /// JSONPatch operation to act on the node

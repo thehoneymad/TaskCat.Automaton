@@ -136,17 +136,17 @@
             if (eventDef == null)
                 throw new ArgumentNullException(nameof(eventDef));
 
-            if (string.IsNullOrWhiteSpace(eventDef.FromType))
-                throw new ArgumentException(nameof(eventDef.FromType));
+            if (string.IsNullOrWhiteSpace(eventDef.Type))
+                throw new ArgumentException(nameof(eventDef.Type));
 
             if (this.currentCandiateNode == null)
                 throw new NullReferenceException(nameof(currentCandiateNode));
 
-            if (this.currentCandiateNode.Id != eventDef.FromType)
+            if (this.currentCandiateNode.Id != eventDef.Type)
                 return;
 
             // Find a event that matches the currentCandidate
-            var eventMatch = this.Events.Where(x => x.From == eventDef.FromType && IsSameOperation(x.MatchCondition, eventDef.Operation));
+            var eventMatch = this.Events.Where(x => x.From == eventDef.Type && IsSameOperation(x.MatchCondition, eventDef.Operation));
 
             if (eventMatch.Any())
             {

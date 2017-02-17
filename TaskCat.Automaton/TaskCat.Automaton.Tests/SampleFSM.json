@@ -46,13 +46,6 @@
       },
       "target": "Pickup",
       "createNewTarget": true,
-      "action": [
-        {
-          "op": "replace",
-          "path": "/variant",
-          "value": "retry"
-        }
-      ],
       "maxEventRetry": 4
     },
     {
