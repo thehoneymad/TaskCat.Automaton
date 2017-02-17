@@ -42,7 +42,7 @@ namespace TaskCat.Automaton.Tests
 
             machine.ExecuteEvent(new EventDefinition() {
                 Type = "FetchDeliveryMan",
-                Operation = op
+                MatchCondition = op
             });
 
             Assert.That(machine.NodeHistory.Count == 2);

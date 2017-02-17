@@ -103,6 +103,11 @@
                 throw new NotSupportedException("Finite state machine has no resolve/end node");
             }
 
+            if (this.Events.GroupBy(x => x.Id).Count() != this.Events.Count)
+            {
+                throw new NotSupportedException("Event ids should be unique, duplicate event id detected");
+            }
+
             // TODO: Find out more and more validation points with time. 
         }
 
@@ -120,8 +125,25 @@
                     throw new ArgumentException($"{startNodeType} is not a valid starting node type");
             }
 
+            startingNode.Id = new Guid().ToString();
             // Add current starting node as a candidate node to take transition
             this.currentCandidateNodes.Add(startingNode);
+        }
+
+        public IEnumerable<Node> GetCurrentCandidateNodes()
+        {
+            return this.currentCandidateNodes;
+        }
+
+
+        public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
+        {
+            var candidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == candidateNodeId);
+            if (candidateNodeId == null)
+                throw new ArgumentException($"Couldn't find {candidateNodeId} in current candidates");
+
+            var events = this.Events.Where(x => x.From == candidateNode.Type);
+            return events;
         }
 
         public void ExecuteEvent(EventDefinition eventDef)
@@ -129,63 +151,60 @@
             if (eventDef == null)
                 throw new ArgumentNullException(nameof(eventDef));
 
-            if (string.IsNullOrWhiteSpace(eventDef.Type))
-                throw new ArgumentException(nameof(eventDef.Type));
+            if (string.IsNullOrWhiteSpace(eventDef.Id))
+                throw new ArgumentException(nameof(eventDef.Id));
 
             if (this.currentCandidateNodes == null || !currentCandidateNodes.Any())
                 throw new NotSupportedException($"{nameof(currentCandidateNodes)} is either empty or null");
 
-            var currentCandiateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Type == eventDef.Type);
-            if (currentCandiateNode == null)
+            var currentCandidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == eventDef.NodeId);
+            if (currentCandidateNode == null)
                 return;
 
             // Find a event that matches the currentCandidate
-            var eventMatch = this.Events.Where(x => x.From == eventDef.Type
-                && IsSameOperation(x.MatchCondition, eventDef.Operation));
+            var selectedEvent = this.Events.First(
+                x => x.Id == eventDef.Id
+                && x.From == currentCandidateNode.Type
+                && IsSameOperation(eventDef.MatchCondition, x.MatchCondition)
+            );
 
-            if (eventMatch.Any())
+            // TODO: This has to show the graphical state of the work here,
+            // Need to update this with proper adjacency
+            this.NodeHistory.Add(currentCandidateNode);
+            if (selectedEvent.IsResolveEvent)
             {
-                // Mathing event can be more than one of course, once again, this is where we send back a choice
-                // For the sake of simplicity of the first example, taking the current one.
-                var selectedEvent = eventMatch.First();
-                var node = this.currentCandiateNode;
-
-
-                // We got the node. Lets create the next node. 
-                // Do we need to create a duplicate 
-                if (selectedEvent.From == selectedEvent.Target && selectedEvent.CreateNewTarget)
+                this.IsResolved = true;
+                return;
+            }
+            else if (selectedEvent.From == selectedEvent.Target)
+            {
+                if (selectedEvent.CreateNewTarget)
                 {
+                    // TODO: We need to use a schema here to resemble
+                    // the nodes, so we can initiate a new one.
+                    // we might need some extra logic to do that too.
+                    // For now just cloning and adding a new Id should be enough
 
-                    // clone the current node. This is JS style cloing, need to write a deep cloning method
-                    var nodestring = JsonConvert.SerializeObject(node);
-                    var cloneNode = JsonConvert.DeserializeObject<Node>(nodestring);
-
-                    // We have to inject a RESET method for this nodes. We dont have that.
-                    // So we have to work with what we have now, that means nothing, we have nothing now. just clone this shit
-                    // And forget. We can check that later.
-
-                    this.currentCandiateNode = cloneNode;
-
-                    this.NodeHistory.Add(this.currentCandiateNode);
+                    var newNode = JsonConvert.DeserializeObject<Node>(JsonConvert.SerializeObject(currentCandidateNode));
+                    newNode.Id = new Guid().ToString();
+                    this.NodeHistory.Add(currentCandidateNode);
+                    currentCandidateNode = newNode;
                 }
-                else if (selectedEvent.IsResolveEvent)
-                {
-                    // This means this is where the shit stops. Target should be null here. 
-                    // We can check for that nullity,  of course we should do it in validation
-                    this.IsResolved = true;
-                }
-                else
-                {
-                    // Need to add the target node here. We don't yet know how to get a sample
-                    // or generator for that. We might need to think about that here.
+            }
+            else
+            {
+                // Need to add the target node here. We don't yet know how to get a sample
+                // or generator for that. We might need to think about that here.
 
-                    // For now, lets just make sure it is testable. 
-                    var dummyNode = this.Nodes.First(x => x.Id == selectedEvent.Target);
-                    this.currentCandiateNode = dummyNode;
-                    this.NodeHistory.Add(dummyNode);
-                }
+                // For now, lets just make sure it is testable. 
 
-                // Change application is done.               
+                var dummyNode = this.Nodes.FirstOrDefault(x => x.Id == selectedEvent.Target);
+                if (dummyNode == null)
+                    throw new NullReferenceException($"Node of type {selectedEvent.Target} is not present in Nodes");
+                this.NodeHistory.Add(currentCandidateNode);
+
+                dummyNode.Id = new Guid().ToString();
+                currentCandidateNode = dummyNode;
             }
         }
 

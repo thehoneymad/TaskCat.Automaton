@@ -9,13 +9,18 @@
     public class EventDefinition
     {
         /// <summary>
-        /// Event/Message to be invoked from type
+        /// Event Id
         /// </summary>
-        public string Type { get; set; }
+        public string Id { get; set; }
+
+        /// <summary>
+        /// Candidate node id
+        /// </summary>
+        public string NodeId { get; set; }
 
         /// <summary>
         /// JSONPatch operation to act on the node
         /// </summary>
-        public Operation Operation { get; set; }
+        public Operation MatchCondition { get; set; }
     }
 }

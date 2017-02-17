@@ -14,10 +14,10 @@ namespace TaskCat.Automaton
         [JsonProperty("target", Required = Required.Always)]
         public string Target { get; set; }
 
-        [JsonProperty("event", Required = Required.Always)]
-        public string Event { get; set; }
+        [JsonProperty("id", Required = Required.Always)]
+        public string Id { get; set; }
 
-        [JsonProperty("matchCondition")]
+        [JsonProperty("matchCondition", Required = Required.Always)]
         public Operation MatchCondition { get; set; }
 
         [JsonProperty("createNewTarget")]
