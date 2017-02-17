@@ -1,6 +1,7 @@
 ﻿namespace TaskCat.Automaton
 {
     using Newtonsoft.Json;
+    using Newtonsoft.Json.Linq;
 
     public class Node
     {
@@ -27,6 +28,6 @@
         public bool IsResolveNode { get; set; }
 
         [JsonProperty("payload")]
-        public dynamic Payload { get; set; }
+        public JObject Payload { get; set; }
     }
 }
