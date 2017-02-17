@@ -10,6 +10,7 @@
     public class FiniteStateMachine
     {
         private HashSet<Node> currentCandidateNodes = new HashSet<Node>();
+        public IEnumerable<Node> CurrentCandidateNodes { get { return currentCandidateNodes; } }
 
         /// <summary>
         /// Name of the finite state machine.
@@ -108,6 +109,11 @@
                 throw new NotSupportedException("Event ids should be unique, duplicate event id detected");
             }
 
+            if (this.Events.Any(x=>x.IsResolveEvent && x.Target!=null))
+            {
+                throw new NotSupportedException("Resolvable events should not have a target");
+            }
+
             // TODO: Find out more and more validation points with time. 
         }
 
@@ -125,14 +131,9 @@
                     throw new ArgumentException($"{startNodeType} is not a valid starting node type");
             }
 
-            startingNode.Id = new Guid().ToString();
+            startingNode.Id = Guid.NewGuid().ToString();
             // Add current starting node as a candidate node to take transition
             this.currentCandidateNodes.Add(startingNode);
-        }
-
-        public IEnumerable<Node> GetCurrentCandidateNodes()
-        {
-            return this.currentCandidateNodes;
         }
 
         public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
@@ -188,9 +189,11 @@
                     // For now just cloning and adding a new Id should be enough
 
                     var newNode = JsonConvert.DeserializeObject<Node>(JsonConvert.SerializeObject(currentCandidateNode));
-                    newNode.Id = new Guid().ToString();
+                    newNode.Id = Guid.NewGuid().ToString();
                     currentCandidateNode = newNode;
                 }
+                
+                // TODO: Increment the retry count and add it to the registry 
             }
             else
             {
@@ -199,11 +202,11 @@
 
                 // For now, lets just make sure it is testable. 
 
-                var dummyNode = this.Nodes.FirstOrDefault(x => x.Id == selectedEvent.Target);
+                var dummyNode = this.Nodes.FirstOrDefault(x => x.Type == selectedEvent.Target);
                 if (dummyNode == null)
                     throw new NullReferenceException($"Node of type {selectedEvent.Target} is not present in Nodes");
 
-                dummyNode.Id = new Guid().ToString();
+                dummyNode.Id = Guid.NewGuid().ToString();
                 currentCandidateNode = dummyNode;
             }
 

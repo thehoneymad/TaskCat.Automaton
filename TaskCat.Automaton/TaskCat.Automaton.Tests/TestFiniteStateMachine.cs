@@ -25,29 +25,43 @@ namespace TaskCat.Automaton.Tests
             Assert.IsNotNull(machine.Events);
         }
 
-        //[Test]
-        //public void TestExecuteSampleEvent()
-        //{
-        //    var jsonFsm = File.ReadAllText($"{ExecutingPath}\\SampleFSM.json");
-        //    Assert.IsNotNull(jsonFsm);
+        [Test]
+        public void TestExecuteSampleEvent()
+        {
+            var jsonFsm = File.ReadAllText($"{ExecutingPath}\\SampleFSM.json");
+            Assert.IsNotNull(jsonFsm);
 
-        //    var machine = FiniteStateMachine.FromJson(jsonFsm);
-        //    Assert.IsNotNull(machine);
+            var machine = FiniteStateMachine.FromJson(jsonFsm);
+            Assert.IsNotNull(machine);
 
-        //    Operation op = new Operation() {
-        //        op = "replace",
-        //        path = "/state",
-        //        value = "COMPLETED"
-        //    };
+            Operation op = new Operation()
+            {
+                op = "replace",
+                path = "/state",
+                value = "COMPLETED"
+            };
 
-        //    machine.ExecuteEvent(new EventDefinition() {
-        //        Id 
-        //        MatchCondition = op
-        //    });
+            var currentCandidates = machine.CurrentCandidateNodes;
 
-        //    Assert.That(machine.NodeHistory.Count == 2);
-        //    Assert.That(machine.NodeHistory.First().Id == "FetchDeliveryMan");
-        //    Assert.That(machine.NodeHistory.Last().Id == "Pickup");
-        //}
+            Assert.IsNotNull(currentCandidates);
+            Assert.AreEqual(1, currentCandidates.Count());
+
+            var candidate = currentCandidates.First();
+
+            var eventPossibilities = machine.GetEvents(candidate.Id);
+            Assert.IsNotNull(eventPossibilities);
+            Assert.That(eventPossibilities.Count() >= 1);
+
+            machine.ExecuteEvent(new EventDefinition() {
+                Id = eventPossibilities.First().Id,
+                NodeId = candidate.Id,
+                MatchCondition = op
+            });
+
+            Assert.That(machine.NodeHistory.Count == 1);
+            Assert.That(machine.NodeHistory.Last().Type == "Pickup");
+            Assert.That(machine.CurrentCandidateNodes.Count() == 1);
+            Assert.That(machine.CurrentCandidateNodes.Last().Type == "Delivery");
+        }
     }
 }
