@@ -4,28 +4,22 @@
   "isForest": true,
   "nodes": [
     {
-      "type": "FetchDeliveryMan",
-      "isEntryNode": true
-    },
-    {
       "type": "Pickup"
     },
     {
       "type": "Delivery",
       "isResolveNode": true
+    },
+    {
+      "type": "ReturnToSellerDelivery",
+      "isResolveNode": true
+    },
+    {
+      "type": "ReturnToWarehouseDelivery",
+      "isResolveNode": true
     }
   ],
   "events": [
-    {
-      "from": "FetchDeliveryMan",
-      "event": "FetchDeliveryMan_COMPLETED",
-      "matchCondition": {
-        "op": "replace",
-        "path": "/state",
-        "value": "COMPLETED"
-      },
-      "target": "Pickup"
-    },
     {
       "from": "Pickup",
       "event": "Pickup_COMPLETED",
@@ -34,7 +28,8 @@
         "path": "/state",
         "value": "COMPLETED"
       },
-      "target": "Delivery"
+      "target": "Delivery",
+      "name": "Complete Pick up and go to Delivery"
     },
     {
       "from": "Pickup",
@@ -46,7 +41,8 @@
       },
       "target": "Pickup",
       "createNewTarget": true,
-      "maxEventRetry": 4
+      "maxEventRetry": 4,
+      "name": "Retry Pickup"
     },
     {
       "from": "Delivery",
@@ -56,7 +52,8 @@
         "path": "/state",
         "value": "COMPLETED"
       },
-      "isResolveEvent": true
+      "isResolveEvent": true,
+      "name": "Delivery Completed"
     },
     {
       "from": "Delivery",
@@ -68,7 +65,8 @@
       },
       "target": "Delivery",
       "createNewTarget": true,
-      "maxEventRetry": 4
+      "maxEventRetry": 4,
+      "name": "Retry Delivery"
     },
     {
       "from": "Delivery",
@@ -78,9 +76,87 @@
         "path": "/state",
         "value": "RETURNED"
       },
-      "target": "Delivery",
+      "target": "ReturnToSellerDelivery",
+      "name": "Delivery Returned and return Products To Seller"
+    },
+    {
+      "from": "Delivery",
+      "event": "Delivery_RETURNED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "RETURNED"
+      },
+      "target": "ReturnToWarehouseDelivery",
+      "name": "Delivery Returned and return Products To Warehouse"
+    },
+    {
+      "from": "ReturnToSellerDelivery",
+      "event": "ReturnToSellerDelivery_COMPLETED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "isResolveEvent": true,
+      "name": "Return Delivery Completed"
+    },
+    {
+      "from": "ReturnToSellerDelivery",
+      "event": "ReturnToSellerDelivery_FAILED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "ReturnToWarehouseDelivery",
+      "name": "Return Delivery Failed and Return To Warehouse"
+    },
+    {
+      "from": "ReturnToSellerDelivery",
+      "event": "ReturnToSellerDelivery_FAILED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "ReturnToSellerDelivery",
       "createNewTarget": true,
-      "maxEventRetry": 4
+      "maxEventRetry": 4,
+      "name": "Return Delivery Failed and Retry Delivery"
+    },
+    {
+      "from": "ReturnToWarehouseDelivery",
+      "event": "ReturnToSellerDelivery_COMPLETED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "isResolveEvent": true,
+      "name": "Return to warehouse completed"
+    },
+    {
+      "from": "ReturnToWarehouseDelivery",
+      "event": "ReturnToSellerDelivery_COMPLETED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "target": "ReturnToSellerDelivery",
+      "name": "Return to warehouse completed and return the product to seller"
+    },
+    {
+      "from": "ReturnToWarehouseDelivery",
+      "event": "ReturnToSellerDelivery_FAILED",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "ReturnToWarehouseDelivery",
+      "name": "Return to warehouse failed and retry returning to warehouse"
     }
   ]
 }

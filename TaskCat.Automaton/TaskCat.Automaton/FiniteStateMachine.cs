@@ -9,7 +9,7 @@
 
     public class FiniteStateMachine
     {
-        private Node currentCandiateNode;
+        private HashSet<Node> currentCandidateNodes = new HashSet<Node>();
 
         /// <summary>
         /// Name of the finite state machine.
@@ -23,13 +23,6 @@
         /// </summary>
         [JsonProperty("variant")]
         public string Variant { get; set; } = "default";
-
-        /// <summary>
-        /// Boolean trigger to let the Finite State Machine know
-        /// that this is a forest instead of a single state tree
-        /// </summary>
-        [JsonProperty("isForest")]
-        public bool IsForest { get; set; }
 
         /// <summary>
         /// Nodes allowed in the finite state machine
@@ -110,26 +103,26 @@
                 throw new NotSupportedException("Finite state machine has no resolve/end node");
             }
 
-            if (!this.IsForest && this.Nodes?.Count(x => x.IsEntryNode) > 1)
-            {
-                throw new NotSupportedException("Finite state machine is not expected to have multiple start states yet it has more than 1 start state");
-            }
-
             // TODO: Find out more and more validation points with time. 
         }
 
-        private void Initiate()
+        private void Initiate(string startNodeType = null)
         {
-            // INFO: This is ghetto. This definitely can be a NFA where I can have multiple
-            // start states. For the prelimiary code, Im taking the first start node to drive
-            // to a result.
+            Node startingNode = null;
+            if (string.IsNullOrWhiteSpace(startNodeType))
+            {
+                startingNode = this.Nodes.First(x => x.IsEntryNode);
+            }
+            else
+            {
+                var selectedNode = this.Nodes.FirstOrDefault(x => x.IsEntryNode && x.Type == startNodeType);
+                if (selectedNode == null)
+                    throw new ArgumentException($"{startNodeType} is not a valid starting node type");
+            }
 
-            var startNode = this.Nodes.First(x => x.IsEntryNode);
-            this.currentCandiateNode = startNode;
-            this.NodeHistory.Add(currentCandiateNode);
-            // This will definitely be a List since we can have multiple candidate node
+            // Add current starting node as a candidate node to take transition
+            this.currentCandidateNodes.Add(startingNode);
         }
-
 
         public void ExecuteEvent(EventDefinition eventDef)
         {
@@ -139,14 +132,16 @@
             if (string.IsNullOrWhiteSpace(eventDef.Type))
                 throw new ArgumentException(nameof(eventDef.Type));
 
-            if (this.currentCandiateNode == null)
-                throw new NullReferenceException(nameof(currentCandiateNode));
+            if (this.currentCandidateNodes == null || !currentCandidateNodes.Any())
+                throw new NotSupportedException($"{nameof(currentCandidateNodes)} is either empty or null");
 
-            if (this.currentCandiateNode.Id != eventDef.Type)
+            var currentCandiateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Type == eventDef.Type);
+            if (currentCandiateNode == null)
                 return;
 
             // Find a event that matches the currentCandidate
-            var eventMatch = this.Events.Where(x => x.From == eventDef.Type && IsSameOperation(x.MatchCondition, eventDef.Operation));
+            var eventMatch = this.Events.Where(x => x.From == eventDef.Type
+                && IsSameOperation(x.MatchCondition, eventDef.Operation));
 
             if (eventMatch.Any())
             {
@@ -155,13 +150,12 @@
                 var selectedEvent = eventMatch.First();
                 var node = this.currentCandiateNode;
 
-                selectedEvent.Action?.ApplyTo(currentCandiateNode.Payload);
 
                 // We got the node. Lets create the next node. 
                 // Do we need to create a duplicate 
                 if (selectedEvent.From == selectedEvent.Target && selectedEvent.CreateNewTarget)
                 {
-                   
+
                     // clone the current node. This is JS style cloing, need to write a deep cloning method
                     var nodestring = JsonConvert.SerializeObject(node);
                     var cloneNode = JsonConvert.DeserializeObject<Node>(nodestring);
@@ -172,14 +166,12 @@
 
                     this.currentCandiateNode = cloneNode;
 
-                    selectedEvent.Action?.ApplyTo(this.currentCandiateNode.Payload);
                     this.NodeHistory.Add(this.currentCandiateNode);
                 }
                 else if (selectedEvent.IsResolveEvent)
                 {
                     // This means this is where the shit stops. Target should be null here. 
                     // We can check for that nullity,  of course we should do it in validation
-                    selectedEvent.Action?.ApplyTo(currentCandiateNode.Payload);
                     this.IsResolved = true;
                 }
                 else
@@ -192,7 +184,7 @@
                     this.currentCandiateNode = dummyNode;
                     this.NodeHistory.Add(dummyNode);
                 }
-                
+
                 // Change application is done.               
             }
         }

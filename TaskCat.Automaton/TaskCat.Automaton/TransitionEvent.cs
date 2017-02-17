@@ -1,19 +1,20 @@
-﻿using Marvin.JsonPatch.Dynamic;
-using Marvin.JsonPatch.Operations;
+﻿using Marvin.JsonPatch.Operations;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace TaskCat.Automaton
 {
     public class TransitionEvent
     {
-        [JsonProperty("from")]
+        [JsonProperty("name", Required = Required.Always)]
+        public string Name { get; set; }
+
+        [JsonProperty("from", Required = Required.Always)]
         public string From { get; set; }
 
-        [JsonProperty("target")]
+        [JsonProperty("target", Required = Required.Always)]
         public string Target { get; set; }
 
-        [JsonProperty("event")]
+        [JsonProperty("event", Required = Required.Always)]
         public string Event { get; set; }
 
         [JsonProperty("matchCondition")]
