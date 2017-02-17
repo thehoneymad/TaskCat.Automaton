@@ -135,7 +135,6 @@
             return this.currentCandidateNodes;
         }
 
-
         public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
         {
             var candidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == candidateNodeId);
@@ -157,9 +156,12 @@
             if (this.currentCandidateNodes == null || !currentCandidateNodes.Any())
                 throw new NotSupportedException($"{nameof(currentCandidateNodes)} is either empty or null");
 
-            var currentCandidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == eventDef.NodeId);
+            var currentCandidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == eventDef.NodeId);           
             if (currentCandidateNode == null)
                 return;
+
+            // Removing the selected candidate node since it will go down to history anyway
+            this.currentCandidateNodes.Remove(currentCandidateNode);
 
             // Find a event that matches the currentCandidate
             var selectedEvent = this.Events.First(
@@ -187,7 +189,6 @@
 
                     var newNode = JsonConvert.DeserializeObject<Node>(JsonConvert.SerializeObject(currentCandidateNode));
                     newNode.Id = new Guid().ToString();
-                    this.NodeHistory.Add(currentCandidateNode);
                     currentCandidateNode = newNode;
                 }
             }
@@ -201,11 +202,12 @@
                 var dummyNode = this.Nodes.FirstOrDefault(x => x.Id == selectedEvent.Target);
                 if (dummyNode == null)
                     throw new NullReferenceException($"Node of type {selectedEvent.Target} is not present in Nodes");
-                this.NodeHistory.Add(currentCandidateNode);
 
                 dummyNode.Id = new Guid().ToString();
                 currentCandidateNode = dummyNode;
             }
+
+            this.currentCandidateNodes.Add(currentCandidateNode);
         }
 
         // TODO: Refactor the open source codebase of Marvin.JsonPatch or write a equality comparer, this is shit.
