@@ -88,7 +88,7 @@
 
         private void Validate()
         {
-            if (Nodes.GroupBy(x => x.Id).Count() != this.Nodes.Count)
+            if (Nodes.GroupBy(x => x.Type).Count() != this.Nodes.Count)
             {
                 throw new NotSupportedException("Node types should be unique, duplicate node detected");
             }
@@ -194,7 +194,7 @@
             }
             else
             {
-                // Need to add the target node here. We don't yet know how to get a sample
+                // TODO: Need to add the target node here. We don't yet know how to get a sample
                 // or generator for that. We might need to think about that here.
 
                 // For now, lets just make sure it is testable. 

@@ -4,7 +4,8 @@
   "isForest": true,
   "nodes": [
     {
-      "type": "Pickup"
+      "type": "Pickup",
+      "isEntryNode":  true
     },
     {
       "type": "Delivery",
@@ -46,7 +47,7 @@
     },
     {
       "from": "Delivery",
-      "event": "Delivery_COMPLETED_Resolved",
+      "id": "Delivery_COMPLETED_Resolved",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -57,7 +58,7 @@
     },
     {
       "from": "Delivery",
-      "event": "Delivery_FAILED_Retry",
+      "id": "Delivery_FAILED_Retry",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -70,7 +71,7 @@
     },
     {
       "from": "Delivery",
-      "event": "Delivery_RETURNED_ReturnToSeller",
+      "id": "Delivery_RETURNED_ReturnToSeller",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -81,7 +82,7 @@
     },
     {
       "from": "Delivery",
-      "event": "Delivery_RETURNED_ReturnToWarehouse",
+      "id": "Delivery_RETURNED_ReturnToWarehouse",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -92,7 +93,7 @@
     },
     {
       "from": "ReturnToSellerDelivery",
-      "event": "ReturnToSellerDelivery_COMPLETED_Resolved",
+      "id": "ReturnToSellerDelivery_COMPLETED_Resolved",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -103,7 +104,7 @@
     },
     {
       "from": "ReturnToSellerDelivery",
-      "event": "ReturnToSellerDelivery_FAILED_ReturnToWarehouse",
+      "id": "ReturnToSellerDelivery_FAILED_ReturnToWarehouse",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -114,7 +115,7 @@
     },
     {
       "from": "ReturnToSellerDelivery",
-      "event": "ReturnToSellerDelivery_FAILED_Retry",
+      "id": "ReturnToSellerDelivery_FAILED_Retry",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -127,7 +128,7 @@
     },
     {
       "from": "ReturnToWarehouseDelivery",
-      "event": "ReturnToSellerDelivery_COMPLETED_Resolved",
+      "id": "ReturnToWarehouseDelivery_COMPLETED_Resolved",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -138,7 +139,7 @@
     },
     {
       "from": "ReturnToWarehouseDelivery",
-      "event": "ReturnToSellerDelivery_COMPLETED_ReturnToSeller",
+      "id": "ReturnToWarehouseDelivery_COMPLETED_ReturnToSeller",
       "matchCondition": {
         "op": "replace",
         "path": "/state",
@@ -149,7 +150,7 @@
     },
     {
       "from": "ReturnToWarehouseDelivery",
-      "event": "ReturnToSellerDelivery_FAILED_ReturnToWarehouse",
+      "id": "ReturnToWarehouseDelivery_FAILED_ReturnToWarehouse",
       "matchCondition": {
         "op": "replace",
         "path": "/state",

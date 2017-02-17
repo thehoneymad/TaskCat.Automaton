@@ -11,7 +11,7 @@ namespace TaskCat.Automaton
         [JsonProperty("from", Required = Required.Always)]
         public string From { get; set; }
 
-        [JsonProperty("target", Required = Required.Always)]
+        [JsonProperty("target")]
         public string Target { get; set; }
 
         [JsonProperty("id", Required = Required.Always)]
