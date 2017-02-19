@@ -1,6 +1,6 @@
 The sample state machine diagram looks like this. If `createNewTarget` is set to `true` then the node will create a new node in the chain rather than coming back to itself
 
-<img src='http://g.gravizo.com/g?
+![Sample FSM](https://g.gravizo.com/g?
  digraph G {
    pickup -> pickup [style=bold, label="FAILED (change variant to retry)"];
    pickup -> delivery [label="COMPLETED"];
@@ -16,4 +16,4 @@ The sample state machine diagram looks like this. If `createNewTarget` is set to
    delivery -> resolved [label="COMPLETED"];
    ReturnToSeller -> resolved [label="COMPLETED"];
  }
-'/>
+)
