@@ -140,6 +140,11 @@
             this.IsInitialized = true;
         }
 
+        public void Initiate(MachineSave save)
+        {
+            
+        }
+
         public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
         {
             var candidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == candidateNodeId);
@@ -152,7 +157,7 @@
 
         public MachineSave SaveMachine()
         {
-            var save = new MachineSave(this.NodeHistory, this.NodeDictionary);
+            var save = MachineSave.SaveMachine(this);
             return save;
         }
 
