@@ -142,7 +142,13 @@
 
         public void Initiate(MachineSave save)
         {
-            
+            this.Name = save.Name;
+            this.Variant = save.Variant;
+            this.NodeHistory = save.NodeHistory;
+            this.IsResolved = save.IsResolved;
+            this.IsInitialized = save.IsInitialized;
+            this.currentCandidateNodes = new HashSet<Node>(save.CurrentCandidateNodes);
+            this.NodeDictionary = save.NodeDictionary;
         }
 
         public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
