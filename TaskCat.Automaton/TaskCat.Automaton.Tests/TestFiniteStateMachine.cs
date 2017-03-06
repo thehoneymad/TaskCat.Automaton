@@ -34,6 +34,8 @@ namespace TaskCat.Automaton.Tests
             var machine = FiniteStateMachine.FromJson(jsonFsm);
             Assert.IsNotNull(machine);
 
+            machine.Initiate();
+
             Operation op = new Operation()
             {
                 op = "replace",

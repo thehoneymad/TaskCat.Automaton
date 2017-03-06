@@ -42,6 +42,7 @@
         public Dictionary<string, Node> NodeDictionary { get; set; } = new Dictionary<string, Node>();
 
         public bool IsResolved { get; private set; }
+        public bool IsInitialized { get; private set; }
 
         private FiniteStateMachine()
         {
@@ -63,7 +64,6 @@
                 throw new NullReferenceException(nameof(fsm));
 
             fsm.Validate();
-            fsm.Initiate();
             return fsm;
         }
 
@@ -82,7 +82,6 @@
                     throw new NullReferenceException(nameof(fsm));
 
                 fsm.Validate();
-                fsm.Initiate();
                 return fsm;
             }
         }
@@ -117,8 +116,11 @@
             // TODO: Find out more and more validation points with time. 
         }
 
-        private void Initiate(string startNodeType = null)
+        public void Initiate(string startNodeType = null)
         {
+            if (IsInitialized)
+                throw new InvalidOperationException("Machine seems to have been initialized already");
+
             Node startingNode = null;
             if (string.IsNullOrWhiteSpace(startNodeType))
             {
@@ -134,6 +136,8 @@
             startingNode.Id = Guid.NewGuid().ToString();
             // Add current starting node as a candidate node to take transition
             this.currentCandidateNodes.Add(startingNode);
+
+            this.IsInitialized = true;
         }
 
         public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
@@ -221,7 +225,7 @@
 
             // Add node to dictionary first
             NodeDictionary.Add(previousNode.Id, previousNode);
-            
+
 
             if (NodeHistory.ContainsKey(previousNode.Id)) { NodeHistory[previousNode.Id].Add(currentCandidateNode.Id); }
             else { NodeHistory[previousNode.Id] = new List<string>(); }
