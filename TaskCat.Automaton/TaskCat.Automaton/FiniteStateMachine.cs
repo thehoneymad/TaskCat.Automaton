@@ -150,6 +150,24 @@
             return events;
         }
 
+        public MachineSave SaveMachine()
+        {
+            var save = new MachineSave(this.NodeHistory, this.NodeDictionary);
+            return save;
+        }
+
+        public void SaveMachineToFile(string path)
+        {
+            var save = this.SaveMachine();
+
+            var serializedMachineSave = JsonConvert.SerializeObject(save, Formatting.Indented);
+
+            using (StreamWriter file = File.CreateText(path))
+            {
+                file.Write(serializedMachineSave);
+            }
+        }
+
         public void ExecuteEvent(EventDefinition eventDef)
         {
             if (eventDef == null)
