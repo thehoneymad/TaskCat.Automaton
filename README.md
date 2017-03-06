@@ -1,4 +1,4 @@
-# TaskCat.Automataton
+# TaskCat.Automaton
 Json driven finite state machine.
 
 Essentially the need of this could've been simplified using a simple finite state machine. Since this was a part of TaskCat, we figured we need something tailor made for us. A lot of systems are using JSON not only as the primary data interchange format but also the primary storage format now a days. Thanks goes to the document driven databases like MongoDb (esssentially MongoDb uses BSON, but meh!). Handling a system that essentially works with workflows gets tougher and tougher since the real life workflows are not easily predictable, sometimes not even understood up until a certain time has invested into development.
