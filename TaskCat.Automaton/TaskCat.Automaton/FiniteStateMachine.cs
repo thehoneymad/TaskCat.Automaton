@@ -167,6 +167,7 @@
 
             // Removing the selected candidate node since it will go down to history anyway
             this.currentCandidateNodes.Remove(currentCandidateNode);
+            var previousNode = currentCandidateNode;
 
             // Find a event that matches the currentCandidate
             var selectedEvent = this.Events.First(
@@ -174,10 +175,6 @@
                 && x.From == currentCandidateNode.Type
                 && IsSameOperation(eventDef.MatchCondition, x.MatchCondition)
             );
-
-            // TODO: This has to show the graphical state of the work here,
-            // Need to update this with proper adjacency
-            var previousNode = currentCandidateNode;
 
             if (selectedEvent.IsResolveEvent)
             {
