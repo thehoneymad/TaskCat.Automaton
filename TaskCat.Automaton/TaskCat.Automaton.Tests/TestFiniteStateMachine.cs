@@ -52,14 +52,17 @@ namespace TaskCat.Automaton.Tests
             Assert.IsNotNull(eventPossibilities);
             Assert.That(eventPossibilities.Count() >= 1);
 
-            machine.ExecuteEvent(new EventDefinition() {
+            machine.ExecuteEvent(new EventDefinition()
+            {
                 Id = eventPossibilities.First().Id,
                 NodeId = candidate.Id,
                 MatchCondition = op
             });
 
             Assert.That(machine.NodeHistory.Count == 1);
-            Assert.That(machine.NodeHistory.Last().Type == "Pickup");
+            Assert.IsNotNull(machine.NodeHistory.Last());
+            Assert.IsNotNull(machine.NodeHistory.Last().Value.Count == 1);
+            Assert.That(machine.NodeDictionary.First().Value.Type == "Pickup");
             Assert.That(machine.CurrentCandidateNodes.Count() == 1);
             Assert.That(machine.CurrentCandidateNodes.Last().Type == "Delivery");
         }

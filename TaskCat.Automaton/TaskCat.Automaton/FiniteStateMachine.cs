@@ -31,15 +31,15 @@
         [JsonProperty("nodes")]
         public List<Node> Nodes { get; set; }
 
-
         /// <summary>
         /// Events/Transition definitions for the machine
         /// </summary>
         [JsonProperty("events")]
         public List<TransitionEvent> Events { get; set; }
 
-
-        public List<Node> NodeHistory { get; private set; } = new List<Node>();
+        // TODO: May be a separate class to handle these?
+        public Dictionary<string, List<string>> NodeHistory { get; set; } = new Dictionary<string, List<string>>();
+        public Dictionary<string, Node> NodeDictionary { get; set; } = new Dictionary<string, Node>();
 
         public bool IsResolved { get; private set; }
 
@@ -109,7 +109,7 @@
                 throw new NotSupportedException("Event ids should be unique, duplicate event id detected");
             }
 
-            if (this.Events.Any(x=>x.IsResolveEvent && x.Target!=null))
+            if (this.Events.Any(x => x.IsResolveEvent && x.Target != null))
             {
                 throw new NotSupportedException("Resolvable events should not have a target");
             }
@@ -157,7 +157,7 @@
             if (this.currentCandidateNodes == null || !currentCandidateNodes.Any())
                 throw new NotSupportedException($"{nameof(currentCandidateNodes)} is either empty or null");
 
-            var currentCandidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == eventDef.NodeId);           
+            var currentCandidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == eventDef.NodeId);
             if (currentCandidateNode == null)
                 return;
 
@@ -173,7 +173,8 @@
 
             // TODO: This has to show the graphical state of the work here,
             // Need to update this with proper adjacency
-            this.NodeHistory.Add(currentCandidateNode);
+            var previousNode = currentCandidateNode;
+
             if (selectedEvent.IsResolveEvent)
             {
                 this.IsResolved = true;
@@ -192,7 +193,6 @@
                     newNode.Id = Guid.NewGuid().ToString();
                     currentCandidateNode = newNode;
                 }
-                
                 // TODO: Increment the retry count and add it to the registry 
             }
             else
@@ -210,7 +210,23 @@
                 currentCandidateNode = dummyNode;
             }
 
+            this.AddToHistory(previousNode, currentCandidateNode);
             this.currentCandidateNodes.Add(currentCandidateNode);
+        }
+
+        private void AddToHistory(Node previousNode, Node currentCandidateNode)
+        {
+            if (previousNode == currentCandidateNode)
+                return;
+
+            // Add node to dictionary first
+            NodeDictionary.Add(previousNode.Id, previousNode);
+            
+
+            if (NodeHistory.ContainsKey(previousNode.Id)) { NodeHistory[previousNode.Id].Add(currentCandidateNode.Id); }
+            else { NodeHistory[previousNode.Id] = new List<string>(); }
+
+            NodeHistory[previousNode.Id].Add(currentCandidateNode.Id);
         }
 
         // TODO: Refactor the open source codebase of Marvin.JsonPatch or write a equality comparer, this is shit.
