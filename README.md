@@ -1,7 +1,7 @@
-# TaskCat.Automataton
+# TaskCat.Automaton
 Json driven finite state machine.
 
-Essentially the need of this could've been simplified using a simple finite state machine. Since this was a part of TaskCat, we figured we need something tailor made for us. A lot of systems are using JSON not only as the primary data interchange format but also the primary storage format now a days. Thanks goes the the document driven databases like MongoDb. Handling a system that essentially works with workflows gets tougher and tougher since the real life workflows are not easily predictable, sometimes not even understood up until a certain time has invested into development.
+Essentially the need of this could've been simplified using a simple finite state machine. Since this was a part of TaskCat, we figured we need something tailor made for us. A lot of systems are using JSON not only as the primary data interchange format but also the primary storage format now a days. Thanks goes to the document driven databases like MongoDb (esssentially MongoDb uses BSON, but meh!). Handling a system that essentially works with workflows gets tougher and tougher since the real life workflows are not easily predictable, sometimes not even understood up until a certain time has invested into development.
 
 TaskCat.Automaton is a another finite state machine but the transition conditions for this state machines are defined by JSONPatch defined in RFC-6902. The reason behind this was to trigger a document state from one state to another using JSONPatch on the document. Although TaskCat.Automaton doesn't modify the actual document but still it is indeed helpful when you can just ask a state machine to actuate upon any condition you can define through a JSONPatch on any JSON document.
 
@@ -25,4 +25,4 @@ The sample state machine diagram used in the unit tests looks like this. If `cre
  }
 )
 
-The simple state machine based on this graph can be found over https://github.com/thehoneymad/TaskCat.Automaton/blob/master/TaskCat.Automaton/TaskCat.Automaton.Tests/SampleFSM.md
+The simple state machine based on this graph can be found over https://github.com/thehoneymad/TaskCat.Automaton/blob/master/TaskCat.Automaton/TaskCat.Automaton.Tests/SampleFSM.json
