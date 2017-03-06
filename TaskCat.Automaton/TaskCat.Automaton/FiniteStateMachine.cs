@@ -176,6 +176,9 @@
                 && IsSameOperation(eventDef.MatchCondition, x.MatchCondition)
             );
 
+            // INFO: This might look redundant, but the reason it is here because
+            // a machine can even move out on end state too. 
+            IsResolved = false;
             if (selectedEvent.IsResolveEvent)
             {
                 this.IsResolved = true;
