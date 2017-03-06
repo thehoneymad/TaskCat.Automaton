@@ -211,7 +211,7 @@
             if (selectedEvent.IsResolveEvent)
             {
                 this.IsResolved = true;
-                return;
+
             }
             else if (selectedEvent.From == selectedEvent.Target)
             {
