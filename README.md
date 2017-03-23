@@ -7,22 +7,7 @@ TaskCat.Automaton is a another finite state machine but the transition condition
 
 The sample state machine diagram used in the unit tests looks like this. If `createNewTarget` property of the machine is set to `true` then the node will create a new node in the chain rather than coming back to itself. TaskCat.Automaton currently clones the definition to create a new node as this is generative. So, your system doesn't have to have all the nodes to begin with. Our current plan is to make sure that it only takes document driven by a JsonSchema and generates default documents (nodes) from that schema so no system has to know all the nodes right in front and you only save what you have traversed.
 
-![Sample FSM](https://g.gravizo.com/g?
- digraph G {
-   pickup -> pickup [style=bold, label="FAILED (change variant to retry)"];
-   pickup -> delivery [label="COMPLETED"];
-   delivery -> delivery [style=bold, label="FAILED (change variant to retry)"];
-   delivery -> ReturnToSeller [label="RETURNED"];
-   ReturnToSeller -> ReturnToSeller [style=bold, label="FAILED (change variant to retry)"];
-   ReturnToSeller -> ReturnToWarehouse [style=bold, label="FAILED"];
-   ReturnToWarehouse -> ReturnToSeller [label="COMPLETED"];
-   ReturnToWarehouse -> ReturnToWarehouse [style=bold, label="FAILED (change variant to retry)"];
-   ReturnToWarehouse -> resolved [label="COMPLETED"];
-   delivery -> ReturnToWarehouse [label="RETURNED"];
-   resolved [shape=box,style=filled,color=".7 .3 1.0"];
-   delivery -> resolved [label="COMPLETED"];
-   ReturnToSeller -> resolved [label="COMPLETED"];
- }
+![Sample FSM](https://g.gravizo.com/g?%20digraph%20G%20{%20pickup%20-%3E%20pickup%20[style=bold,%20label=%22FAILED%20(change%20variant%20to%20retry)%22];%20pickup%20-%3E%20delivery%20[label=%22COMPLETED%22];%20delivery%20-%3E%20delivery%20[style=bold,%20label=%22FAILED%20(change%20variant%20to%20retry)%22];%20delivery%20-%3E%20ReturnToSeller%20[label=%22RETURNED%22];%20ReturnToSeller%20-%3E%20ReturnToSeller%20[style=bold,%20label=%22FAILED%20(change%20variant%20to%20retry)%22];%20ReturnToSeller%20-%3E%20ReturnToWarehouse%20[style=bold,%20label=%22FAILED%22];%20ReturnToWarehouse%20-%3E%20ReturnToSeller%20[label=%22COMPLETED%22];%20ReturnToWarehouse%20-%3E%20ReturnToWarehouse%20[style=bold,%20label=%22FAILED%20(change%20variant%20to%20retry)%22];%20ReturnToWarehouse%20-%3E%20resolved%20[label=%22COMPLETED%22];%20delivery%20-%3E%20ReturnToWarehouse%20[label=%22RETURNED%22];%20resolved%20[shape=box,style=filled,color=%22.7%20.3%201.0%22];%20delivery%20-%3E%20resolved%20[label=%22COMPLETED%22];%20ReturnToSeller%20-%3E%20resolved%20[label=%22COMPLETED%22];%20}
 )
 
 The simple state machine based on this graph can be found over https://github.com/thehoneymad/TaskCat.Automaton/blob/master/TaskCat.Automaton/TaskCat.Automaton.Tests/SampleFSM.json
