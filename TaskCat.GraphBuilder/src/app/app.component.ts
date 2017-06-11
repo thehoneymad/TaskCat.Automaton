@@ -43,22 +43,24 @@ export class AppComponent implements OnInit {
 
   private initNodes() {
     this.nodes = [
-      { id: 'A', name: 'A node', reflexive: false, group: 1 },
-      { id: 'B', name: 'B node', reflexive: false, group: 1 },
-      { id: 'C', name: 'C node', reflexive: false, group: 1 }
+      { id: 'Pickup', name: 'Pickup', reflexive: false, group: 1 },
+      { id: 'Delivery', name: 'Delivery', reflexive: false, group: 1 },
+      { id: 'ReturnToSellerDelivery', name: 'ReturnToSellerDelivery', reflexive: false, group: 1 },
+      { id: 'ReturnToWarehouseDelivery', name: 'ReturnToWarehouseDelivery', reflexive: false, group: 1 }
     ];
 
     this.links = [
-      { source: this.nodes[0].id, target: this.nodes[1].id, left: false, right: true },
-      { source: this.nodes[1].id, target: this.nodes[2].id, left: false, right: true }
+      { source: this.nodes[0].id, target: this.nodes[1].id },
+      { source: this.nodes[0].id, target: this.nodes[0].id },
+      { source: this.nodes[1].id, target: this.nodes[2].id }
     ];
   }
 
   private initSimulation() {
     if (this.simulation) {
       this.simulation
-      .force('center', d3.forceCenter(this.canvas.width / 2, this.canvas.height / 2))
-      .restart();
+        .force('center', d3.forceCenter(this.canvas.width / 2, this.canvas.height / 2))
+        .restart();
     } else {
       this.simulation = d3.forceSimulation()
         .force('link', d3.forceLink()

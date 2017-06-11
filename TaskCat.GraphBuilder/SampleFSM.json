@@ -1,0 +1,163 @@
+{
+  "name": "ClassifiedDelivery",
+  "variant": "default",
+  "isForest": true,
+  "nodes": [
+    {
+      "type": "Pickup",
+      "isEntryNode":  true
+    },
+    {
+      "type": "Delivery",
+      "isResolveNode": true
+    },
+    {
+      "type": "ReturnToSellerDelivery",
+      "isResolveNode": true
+    },
+    {
+      "type": "ReturnToWarehouseDelivery",
+      "isResolveNode": true
+    }
+  ],
+  "events": [
+    {
+      "from": "Pickup",
+      "id": "Pickup_COMPLETED_Delivery",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "target": "Delivery",
+      "name": "Complete Pick up and go to Delivery"
+    },
+    {
+      "from": "Pickup",
+      "id": "PickUp_FAILED_Retry",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "Pickup",
+      "createNewTarget": true,
+      "maxEventRetry": 4,
+      "name": "Retry Pickup"
+    },
+    {
+      "from": "Delivery",
+      "id": "Delivery_COMPLETED_Resolved",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "isResolveEvent": true,
+      "name": "Delivery Completed"
+    },
+    {
+      "from": "Delivery",
+      "id": "Delivery_FAILED_Retry",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "Delivery",
+      "createNewTarget": true,
+      "maxEventRetry": 4,
+      "name": "Retry Delivery"
+    },
+    {
+      "from": "Delivery",
+      "id": "Delivery_RETURNED_ReturnToSeller",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "RETURNED"
+      },
+      "target": "ReturnToSellerDelivery",
+      "name": "Delivery Returned and return Products To Seller"
+    },
+    {
+      "from": "Delivery",
+      "id": "Delivery_RETURNED_ReturnToWarehouse",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "RETURNED"
+      },
+      "target": "ReturnToWarehouseDelivery",
+      "name": "Delivery Returned and return Products To Warehouse"
+    },
+    {
+      "from": "ReturnToSellerDelivery",
+      "id": "ReturnToSellerDelivery_COMPLETED_Resolved",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "isResolveEvent": true,
+      "name": "Return Delivery Completed"
+    },
+    {
+      "from": "ReturnToSellerDelivery",
+      "id": "ReturnToSellerDelivery_FAILED_ReturnToWarehouse",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "ReturnToWarehouseDelivery",
+      "name": "Return Delivery Failed and Return To Warehouse"
+    },
+    {
+      "from": "ReturnToSellerDelivery",
+      "id": "ReturnToSellerDelivery_FAILED_Retry",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "ReturnToSellerDelivery",
+      "createNewTarget": true,
+      "maxEventRetry": 4,
+      "name": "Return Delivery Failed and Retry Delivery"
+    },
+    {
+      "from": "ReturnToWarehouseDelivery",
+      "id": "ReturnToWarehouseDelivery_COMPLETED_Resolved",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "isResolveEvent": true,
+      "name": "Return to warehouse completed"
+    },
+    {
+      "from": "ReturnToWarehouseDelivery",
+      "id": "ReturnToWarehouseDelivery_COMPLETED_ReturnToSeller",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "COMPLETED"
+      },
+      "target": "ReturnToSellerDelivery",
+      "name": "Return to warehouse completed and return the product to seller"
+    },
+    {
+      "from": "ReturnToWarehouseDelivery",
+      "id": "ReturnToWarehouseDelivery_FAILED_ReturnToWarehouse",
+      "matchCondition": {
+        "op": "replace",
+        "path": "/state",
+        "value": "FAILED"
+      },
+      "target": "ReturnToWarehouseDelivery",
+      "name": "Return to warehouse failed and retry returning to warehouse"
+    }
+  ]
+}
