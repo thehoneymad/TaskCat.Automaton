@@ -6,9 +6,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build",
-    "test": "ng test",
-    "lint": "ng lint",
-    "e2e": "ng e2e"
+    "lint": "ng lint"
   },
   "private": true,
   "dependencies": {
@@ -20,14 +18,14 @@
     "@angular/platform-browser": "^4.0.0",
     "@angular/platform-browser-dynamic": "^4.0.0",
     "@angular/router": "^4.0.0",
-    "@types/d3": "^4.9.0",
     "bootstrap": "^3.3.7",
     "bootstrap-material-design": "^0.5.10",
     "core-js": "^2.4.1",
-    "d3": "^4.9.1",
     "font-awesome": "^4.7.0",
     "ngx-bootstrap": "^1.7.1",
+    "ngx-upload": "0.0.1",
     "rxjs": "^5.1.0",
+    "vis": "^4.20.0",
     "zone.js": "^0.8.4"
   },
   "devDependencies": {
