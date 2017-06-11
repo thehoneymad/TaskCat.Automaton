@@ -52,30 +52,63 @@ export class AppComponent implements OnInit {
         .strength(1.5)
       )
       .force('charge', d3.forceManyBody())
-      .force('center', d3.forceCenter())
+      .force('center', d3.forceCenter(this.width / 2, this.height / 2))
       .nodes(this.nodes)
       .on('tick', () => this.ticked());
 
     this.simulation.force('link')
       .links(this.links);
+
+
+
+    d3.select(this.canvas)
+      .call(d3.drag()
+        .container(this.canvas)
+        .subject(() => this.dragSubject())
+        .on('start', () => this.onDragStart())
+        .on('drag', () => this.onDrag())
+        .on('end', () => this.onDragEnd())
+      );
+  }
+
+  private dragSubject(): any {
+    return this.simulation.find(d3.event.x, d3.event.y);
+  }
+
+  private onDragStart() {
+    console.log(d3.event);
+    if (!d3.event.active) {
+      this.simulation.alphaTarget(0.3).restart();
+    }
+
+    d3.event.subject.fx = d3.event.subject.x;
+    d3.event.subject.fy = d3.event.subject.y;
+  }
+
+  private onDrag() {
+    d3.event.subject.fx = d3.event.x;
+    d3.event.subject.fy = d3.event.y;
+  }
+
+  private onDragEnd() {
+    if (!d3.event.active) { this.simulation.alphaTarget(0); }
+    d3.event.subject.fx = null;
+    d3.event.subject.fy = null;
   }
 
   private ticked() {
     this.context.clearRect(0, 0, this.width, this.height);
     this.context.save();
-    this.context.translate(this.width / 2, this.height / 2);
 
     this.context.beginPath();
     this.links.forEach((link) => this.drawLink(link));
     this.context.strokeStyle = '#aaa';
     this.context.stroke();
-    this.context.closePath();
 
     this.context.beginPath();
     this.nodes.forEach((link) => this.drawNode(link));
     this.context.fillStyle = 'blue';
     this.context.fill();
-    this.context.closePath();
 
     this.context.restore();
   }
@@ -93,7 +126,5 @@ export class AppComponent implements OnInit {
     // this is a GUESS of height, just taking a single character to figure things out
     const textHeight = this.context.measureText('w').width;
     this.context.fillText(node.name, node.x - (textWidth / 2), node.y - textHeight - 10);
-
-
   }
 }
