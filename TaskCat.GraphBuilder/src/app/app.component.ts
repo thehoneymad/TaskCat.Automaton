@@ -59,8 +59,6 @@ export class AppComponent implements OnInit {
     this.simulation.force('link')
       .links(this.links);
 
-
-
     d3.select(this.canvas)
       .call(d3.drag()
         .container(this.canvas)
@@ -76,7 +74,6 @@ export class AppComponent implements OnInit {
   }
 
   private onDragStart() {
-    console.log(d3.event);
     if (!d3.event.active) {
       this.simulation.alphaTarget(0.3).restart();
     }
