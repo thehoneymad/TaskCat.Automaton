@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
 
 import * as d3 from 'd3';
 
@@ -15,20 +15,30 @@ export class AppComponent implements OnInit {
   private canvas: HTMLCanvasElement;
   private context: CanvasRenderingContext2D;
 
-  private width: number;
-  private height: number;
+  @ViewChild('canvasContainer') canvasContainer: ElementRef;
 
   ngOnInit(): void {
     this.initCanvas();
     this.initNodes();
     this.initSimulation();
+    this.initWindowResizeEvents();
   }
 
   private initCanvas() {
     this.canvas = document.querySelector('canvas');
     this.context = this.canvas.getContext('2d');
-    this.width = this.canvas.width;
-    this.height = this.canvas.height;
+    this.canvas.width = this.canvasContainer.nativeElement.clientWidth;
+    this.canvas.height = this.canvasContainer.nativeElement.clientHeight;
+  }
+
+  private initWindowResizeEvents() {
+    window.addEventListener('resize', () => this.resizeCanvas(), false);
+  }
+
+  private resizeCanvas() {
+    this.canvas.width = this.canvasContainer.nativeElement.clientWidth;
+    this.canvas.height = this.canvasContainer.nativeElement.clientHeight;
+    this.initSimulation();
   }
 
   private initNodes() {
@@ -45,30 +55,36 @@ export class AppComponent implements OnInit {
   }
 
   private initSimulation() {
-    this.simulation = d3.forceSimulation()
-      .force('link', d3.forceLink()
-        .id(function (link) { return link['id']; })
-        .distance(function (link) { return 100; })
-        .strength(1.5)
-      )
-      .force('charge', d3.forceManyBody())
-      .force('center', d3.forceCenter(this.width / 2, this.height / 2))
-      .nodes(this.nodes)
-      .on('tick', () => this.ticked());
+    if (this.simulation) {
+      this.simulation
+      .force('center', d3.forceCenter(this.canvas.width / 2, this.canvas.height / 2))
+      .restart();
+    } else {
+      this.simulation = d3.forceSimulation()
+        .force('link', d3.forceLink()
+          .id(function (link) { return link['id']; })
+          .distance(function (link) { return 100; })
+          .strength(1.5)
+        )
+        .force('charge', d3.forceManyBody())
+        .force('center', d3.forceCenter(this.canvas.width / 2, this.canvas.height / 2))
+        .nodes(this.nodes)
+        .on('tick', () => this.ticked());
 
-    this.simulation.force('link')
-      .links(this.links);
+      this.simulation.force('link')
+        .links(this.links);
 
 
 
-    d3.select(this.canvas)
-      .call(d3.drag()
-        .container(this.canvas)
-        .subject(() => this.dragSubject())
-        .on('start', () => this.onDragStart())
-        .on('drag', () => this.onDrag())
-        .on('end', () => this.onDragEnd())
-      );
+      d3.select(this.canvas)
+        .call(d3.drag()
+          .container(this.canvas)
+          .subject(() => this.dragSubject())
+          .on('start', () => this.onDragStart())
+          .on('drag', () => this.onDrag())
+          .on('end', () => this.onDragEnd())
+        );
+    }
   }
 
   private dragSubject(): any {
@@ -96,7 +112,7 @@ export class AppComponent implements OnInit {
   }
 
   private ticked() {
-    this.context.clearRect(0, 0, this.width, this.height);
+    this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.context.save();
 
     this.context.beginPath();
