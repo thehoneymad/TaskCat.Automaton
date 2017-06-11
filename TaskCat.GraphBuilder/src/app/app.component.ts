@@ -76,7 +76,6 @@ export class AppComponent implements OnInit {
   }
 
   private onDragStart() {
-    console.log(d3.event);
     if (!d3.event.active) {
       this.simulation.alphaTarget(0.3).restart();
     }
