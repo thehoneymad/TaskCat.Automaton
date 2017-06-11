@@ -140,6 +140,17 @@
             this.IsInitialized = true;
         }
 
+        public void Initiate(MachineSave save)
+        {
+            this.Name = save.Name;
+            this.Variant = save.Variant;
+            this.NodeHistory = save.NodeHistory;
+            this.IsResolved = save.IsResolved;
+            this.IsInitialized = save.IsInitialized;
+            this.currentCandidateNodes = new HashSet<Node>(save.CurrentCandidateNodes);
+            this.NodeDictionary = save.NodeDictionary;
+        }
+
         public IEnumerable<TransitionEvent> GetEvents(string candidateNodeId)
         {
             var candidateNode = this.currentCandidateNodes.FirstOrDefault(x => x.Id == candidateNodeId);
@@ -148,6 +159,24 @@
 
             var events = this.Events.Where(x => x.From == candidateNode.Type);
             return events;
+        }
+
+        public MachineSave SaveMachine()
+        {
+            var save = MachineSave.SaveMachine(this);
+            return save;
+        }
+
+        public void SaveMachineToFile(string path)
+        {
+            var save = this.SaveMachine();
+
+            var serializedMachineSave = JsonConvert.SerializeObject(save, Formatting.Indented);
+
+            using (StreamWriter file = File.CreateText(path))
+            {
+                file.Write(serializedMachineSave);
+            }
         }
 
         public void ExecuteEvent(EventDefinition eventDef)
@@ -182,7 +211,7 @@
             if (selectedEvent.IsResolveEvent)
             {
                 this.IsResolved = true;
-                return;
+
             }
             else if (selectedEvent.From == selectedEvent.Target)
             {

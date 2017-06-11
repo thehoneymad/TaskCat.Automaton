@@ -53,6 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="EventDefinition.cs" />
+    <Compile Include="MachineSave.cs" />
     <Compile Include="Node.cs" />
     <Compile Include="TransitionEvent.cs" />
     <Compile Include="FiniteStateMachine.cs" />
