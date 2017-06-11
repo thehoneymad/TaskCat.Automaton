@@ -47,8 +47,8 @@ export class AppComponent implements OnInit {
   private initSimulation() {
     this.simulation = d3.forceSimulation()
       .force('link', d3.forceLink()
-        .id(function (d) { return d['id']; })
-        .distance(function (d) { console.log(d); return 100; })
+        .id(function (link) { return link['id']; })
+        .distance(function (link) { return 100; })
         .strength(1.5)
       )
       .force('charge', d3.forceManyBody())
@@ -75,8 +75,6 @@ export class AppComponent implements OnInit {
     this.nodes.forEach((link) => this.drawNode(link));
     this.context.fillStyle = 'blue';
     this.context.fill();
-    this.context.strokeStyle = '#fff';
-    this.context.stroke();
     this.context.closePath();
 
     this.context.restore();
@@ -88,13 +86,14 @@ export class AppComponent implements OnInit {
   }
 
   private drawNode(node) {
-    this.context.arc(node.x, node.y, 10, 0, Math.PI * 2);
+    this.context.moveTo(node.x + 3, node.y);
+    this.context.arc(node.x, node.y, 10, 0, 2 * Math.PI);
 
     const textWidth = this.context.measureText(node.name).width;
     // this is a GUESS of height, just taking a single character to figure things out
     const textHeight = this.context.measureText('w').width;
     this.context.fillText(node.name, node.x - (textWidth / 2), node.y - textHeight - 10);
 
-    this.context.moveTo(node.x + 3, node.y);
+
   }
 }
