@@ -1,19 +1,16 @@
 <nav class="navbar navbar-default">
     <div class="container-fluid">
-        <h3>TaskCat.Automaton Graph Builder</h3>
+        <h3>TaskCat.Automaton Graph Builder - {{machineName || "Empty Machine"}}</h3>
     </div>
 </nav>
-<div class="container">
-    <div class="row">
-        <div id="canvasContainer" class="center-block" #canvasContainer>
+<div class="row" ngfiledrop>
+    <div class="col-md-12">
+        <div id="canvasContainer" #canvasContainer>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-4"></div>
-        <div class="col-md-8">
-            <button type="button" class="btn btn-fab btn-success pull-right">
+
+        <label class="btn btn-fab btn-success">
                 <i class="material-icons" >file_upload </i>
-            </button>
-        </div>
+                <input #fileInput type="file" style="display: none;" (change)="fileChanged($event)">
+        </label>
     </div>
 </div>

@@ -1,4 +1,5 @@
 import { Component, OnInit, ElementRef, ViewChild } from '@angular/core';
+import { Machine } from './machine';
 
 import * as vis from 'vis';
 
@@ -8,6 +9,8 @@ import * as vis from 'vis';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent implements OnInit {
+  public machineName = '';
+  private machine: Machine;
   private options: any;
   private data: {
     nodes: any[];
@@ -19,6 +22,7 @@ export class AppComponent implements OnInit {
   private edges: any[];
 
   @ViewChild('canvasContainer') canvasContainer: ElementRef;
+  @ViewChild('fileInput') fileInput: ElementRef;
 
   ngOnInit(): void {
     this.initNodes();
@@ -27,10 +31,10 @@ export class AppComponent implements OnInit {
   }
   private initNodes() {
     this.nodes = [
-      { id: 'Pickup', label: 'Pickup'},
+      { id: 'Pickup', label: 'Pickup' },
       { id: 'Delivery', label: 'Delivery' },
-      { id: 'ReturnToSellerDelivery', label: 'ReturnToSellerDelivery'},
-      { id: 'ReturnToWarehouseDelivery', label: 'ReturnToWarehouseDelivery'}
+      { id: 'ReturnToSellerDelivery', label: 'ReturnToSellerDelivery' },
+      { id: 'ReturnToWarehouseDelivery', label: 'ReturnToWarehouseDelivery' }
     ];
 
     this.edges = [
@@ -40,6 +44,49 @@ export class AppComponent implements OnInit {
     ];
   }
 
+  public fileChanged($event) {
+    this.machineName = '';
+    const file = (<HTMLInputElement>this.fileInput.nativeElement).files[0];
+    if (file.name.endsWith('.json')) {
+      const fileReader = new FileReader();
+      fileReader.readAsText(file);
+      fileReader.onloadend = (e) => this.onFileLoadEnd(e);
+    }
+  }
+
+  private onFileLoadEnd($event) {
+    const result = $event.target.result;
+    const machine = <Machine>JSON.parse(result);
+    if (machine) {
+      this.machine = machine;
+      this.machineName = machine.name;
+      this.parseMachine(this.machine);
+    }
+  }
+
+  private parseMachine(machine: Machine) {
+    const nodes = [];
+    const edges = [];
+    for (let index = 0; index < machine.nodes.length; index++) {
+      const node = machine.nodes[index];
+      nodes.push({ id: node.type, label: node.type });
+    }
+
+    for (let index = 0; index < machine.events.length; index++) {
+      const event = machine.events[index];
+      edges.push({ from: event.from, to: event.target, label: event.matchCondition.value, arrows: 'to' });
+    }
+
+    this.nodes = nodes;
+    this.edges = edges;
+    this.data = {
+      nodes: this.nodes,
+      edges: this.edges
+    };
+
+    this.network.setData(this.data);
+  }
+
   private initContainer() {
     this.container = this.canvasContainer.nativeElement;
     this.data = {
@@ -47,8 +94,9 @@ export class AppComponent implements OnInit {
       edges: this.edges
     };
     this.options = {
-      physics: true,
       nodes: {
+        mass: 10,
+        physics: false,
         shape: 'box',
         size: 30,
         font: {
@@ -59,26 +107,21 @@ export class AppComponent implements OnInit {
       },
       edges: {
         width: 2,
+        length: 100,
         shadow: true,
-        smooth: {
-          type: 'continuous'
-        },
-        font: {align: 'horizontal'}
+        font: {
+          size: 20,
+          align: 'horizontal'
+        }
       },
       autoResize: false,
       layout: {
-        randomSeed: 2,
-        hierarchical: {
-          enabled: true,
-          levelSeparation: 150,
-          nodeSpacing: 100,
-          treeSpacing: 200,
-          blockShifting: true,
-          edgeMinimization: true,
-          parentCentralization: true,
-          direction: 'UD',        // UD, DU, LR, RL
-          sortMethod: 'hubsize'   // hubsize, directed
-        }
+        randomSeed: 2
+      },
+      interaction: {
+        dragNodes: true,
+        dragView: false,
+        zoomView: false
       }
     };
     this.network = new vis.Network(this.container, this.data, this.options);
@@ -90,7 +133,7 @@ export class AppComponent implements OnInit {
   }
 
   private resizeCanvas() {
-    this.network.setSize(this.canvasContainer.nativeElement.clientWidth, this.canvasContainer.nativeElement.clientHeight);
+    this.network.setSize(this.canvasContainer.nativeElement.clientWidth, document.documentElement.clientHeight - 250);
     this.network.redraw();
   }
 }
